@@ -38,7 +38,9 @@ class MessageBar extends Component {
     // device is started in landscape and then rotated to portrait.
     // This does not happen after the first alert appears, as setNewState() is called on each
     // alert and calls _changeOffsetByPosition()
-    this._changeOffsetByPosition(this.state.position)
+    let tempState = {position: this.state.position};
+
+    this.setState(this._changeOffsetByPosition(tempState));
   }
 
   componentWillReceiveProps (nextProps) {
@@ -49,18 +51,20 @@ class MessageBar extends Component {
 
   setNewState (state) {
     // Set the new state, this is triggered when the props of this MessageBar changed
-    this.setState(this.getStateByProps(state))
+    let newState = state;
+    newState = this.getStateByProps(state);
 
     // Apply the colors of the alert depending on its alertType
-    this._applyAlertStylesheet(state.alertType)
+    newState = this._applyAlertStylesheet(newState);//.alertType);
 
     // Override the opposition style position regarding the state position in order to have the alert sticks that position
-    this._changeOffsetByPosition(state.position)
+    newState = this._changeOffsetByPosition(newState);//.position)
+    this.setState(newState);
   }
 
   getStateByProps (props) {
     const def = this.defaultState || {}
-    return {
+    let state = {
       // Default values, will be overridden
       backgroundColor: '#007bff', // default value : blue
       strokeColor: '#006acd', // default value : blue
@@ -177,6 +181,7 @@ class MessageBar extends Component {
       position: props.position || def.position || 'top',
       animationType: props.animationType || def.animationType
     }
+    return state;
   }
 
   /*
@@ -300,7 +305,7 @@ class MessageBar extends Component {
   * Change the background color and the line stroke color depending on the alertType
   * If the alertType is not recognized, the 'info' one (blue colors) is selected for you
   */
-  _applyAlertStylesheet (alertType) {
+  _applyAlertStylesheet (state) {
     // Set the Background color and the line stroke color of the alert depending on its alertType
     // Set to blue-info if no alertType or if the alertType is not recognized
 
@@ -309,68 +314,61 @@ class MessageBar extends Component {
     let titleColor
     let messageColor
 
-    switch (alertType) {
+    switch (state.alertType) {
       case 'success':
-        backgroundColor = this.state.stylesheetSuccess.backgroundColor
-        strokeColor = this.state.stylesheetSuccess.strokeColor
-        titleColor = this.state.stylesheetSuccess.titleColor
-        messageColor = this.state.stylesheetSuccess.messageColor
+        backgroundColor = state.stylesheetSuccess.backgroundColor
+        strokeColor = state.stylesheetSuccess.strokeColor
+        titleColor = state.stylesheetSuccess.titleColor
+        messageColor = state.stylesheetSuccess.messageColor
         break
       case 'error':
-        backgroundColor = this.state.stylesheetError.backgroundColor
-        strokeColor = this.state.stylesheetError.strokeColor
-        titleColor = this.state.stylesheetError.titleColor
-        messageColor = this.state.stylesheetError.messageColor
+        backgroundColor = state.stylesheetError.backgroundColor
+        strokeColor = state.stylesheetError.strokeColor
+        titleColor = state.stylesheetError.titleColor
+        messageColor = state.stylesheetError.messageColor
         break
       case 'warning':
-        backgroundColor = this.state.stylesheetWarning.backgroundColor
-        strokeColor = this.state.stylesheetWarning.strokeColor
-        titleColor = this.state.stylesheetWarning.titleColor
-        messageColor = this.state.stylesheetWarning.messageColor
+        backgroundColor = state.stylesheetWarning.backgroundColor
+        strokeColor = state.stylesheetWarning.strokeColor
+        titleColor = state.stylesheetWarning.titleColor
+        messageColor = state.stylesheetWarning.messageColor
         break
       case 'info':
-        backgroundColor = this.state.stylesheetInfo.backgroundColor
-        strokeColor = this.state.stylesheetInfo.strokeColor
-        titleColor = this.state.stylesheetInfo.titleColor
-        messageColor = this.state.stylesheetInfo.messageColor
+        backgroundColor = state.stylesheetInfo.backgroundColor
+        strokeColor = state.stylesheetInfo.strokeColor
+        titleColor = state.stylesheetInfo.titleColor
+        messageColor = state.stylesheetInfo.messageColor
         break
       default:
-        backgroundColor = this.state.stylesheetExtra.backgroundColor
-        strokeColor = this.state.stylesheetExtra.strokeColor
-        titleColor = this.state.stylesheetExtra.titleColor
-        messageColor = this.state.stylesheetExtra.messageColor
+        backgroundColor = state.stylesheetExtra.backgroundColor
+        strokeColor = state.stylesheetExtra.strokeColor
+        titleColor = state.stylesheetExtra.titleColor
+        messageColor = state.stylesheetExtra.messageColor
         break
     }
 
-    this.setState({
-      backgroundColor: backgroundColor,
-      strokeColor: strokeColor,
-      titleColor: titleColor,
-      messageColor: messageColor
-    })
+    state.backgroundColor = backgroundColor;
+    state.strokeColor = strokeColor;
+    state.titleColor = titleColor;
+    state.messageColor = messageColor;
+
+    return state;
   }
 
   /*
   * Change view<Position>Offset property depending on the state position
   */
-  _changeOffsetByPosition (position) {
-    switch (position) {
+  _changeOffsetByPosition (state) {
+    switch (state.position) {
+      default:
       case 'top':
-        this.setState({
-          viewBottomOffset: null
-        })
+        state.viewBottomOffset= null
         break
       case 'bottom':
-        this.setState({
-          viewTopOffset: null
-        })
-        break
-      default:
-        this.setState({
-          viewBottomOffset: null
-        })
+        state.viewTopOffset= null
         break
     }
+    return state;
   }
 
   /*
@@ -510,7 +508,7 @@ class MessageBar extends Component {
       return (
         <Text
           numberOfLines={this.state.titleNumberOfLines}
-          style={[this.state.titleStyle, {color: this.state.titleColor}]}>
+          style={[this.state.titleStyle, (this.state.titleColor?{color: this.state.titleColor}:null)]}>
           {this.state.title}
         </Text>
       )
@@ -522,7 +520,7 @@ class MessageBar extends Component {
       return (
         <Text
           numberOfLines={this.state.messageNumberOfLines}
-          style={[this.state.messageStyle, {color: this.state.messageColor}]}>
+          style={[this.state.messageStyle,  (this.state.messageColor?{color: this.state.messageColor}:null)]}>
           {this.state.message}
         </Text>
       )
