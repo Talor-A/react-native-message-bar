@@ -201,7 +201,7 @@ class MessageBar extends Component {
       toValue: 1,
       duration: this.state.durationToShow,
       useNativeDriver: true
-    }).start(this._showMessageBarAlertComplete())
+    }).start(this._showMessageBarAlertComplete.bind(this))
   }
 
   /*
@@ -242,7 +242,7 @@ class MessageBar extends Component {
       toValue: 0,
       duration: this.state.durationToHide,
       useNativeDriver: true
-    }).start(this._hideMessageBarAlertComplete())
+    }).start(this._hideMessageBarAlertComplete.bind(this))
   }
 
   _hideMessageBarAlertComplete () {
