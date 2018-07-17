@@ -394,7 +394,10 @@ class MessageBar extends Component {
       case 'SlideFromTop':
         var animationY = this.animatedValue.interpolate({
           inputRange: [0, 1],
-          outputRange: [-windowHeight, 0]
+          // To fix an issue where the message bar would reappear when switching out of the app via the home
+          // button on Android, here we animate to +windowHeight instead of 0, and adjust the position of
+          // the Animated.View below accordingly
+          outputRange: [-windowHeight, windowHeight]
         })
         this.animationTypeTransform = [{ translateY: animationY }]
         break
@@ -445,7 +448,9 @@ class MessageBar extends Component {
           borderColor: this.state.strokeColor,
           borderBottomWidth: 1,
           position: 'absolute',
-          top: this.state.viewTopOffset,
+          // Adjust top position as we are animating to +windowHeight instead of 0 (to fix an Android bug
+          // where the top gets reset to 0 when switching away from the app via the home button)
+          top: this.state.viewTopOffset - windowHeight,
           bottom: this.state.viewBottomOffset,
           left: this.state.viewLeftOffset,
           right: this.state.viewRightOffset,
