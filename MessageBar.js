@@ -393,7 +393,8 @@ class MessageBar extends Component {
     switch (animationType) {
       case 'SlideFromTop':
         var animationY = this.animatedValue.interpolate({
-          inputRange: [0, 1],
+          // Increase the input range for smoother animations than [0, 1]
+          inputRange: [-1, 1],
           // To fix an issue where the message bar would reappear when switching out of the app via the home
           // button on Android, here we animate to +windowHeight instead of 0, and adjust the position of
           // the Animated.View below accordingly
