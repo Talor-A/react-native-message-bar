@@ -538,7 +538,7 @@ class MessageBar extends Component {
     }
     if (this.state.children != null) {
       controls.push(
-          this.state.children
+        this.state.children
       );
     }
     return controls;
