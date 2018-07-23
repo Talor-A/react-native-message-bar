@@ -201,7 +201,7 @@ class MessageBar extends Component {
       toValue: 1,
       duration: this.state.durationToShow,
       useNativeDriver: true
-    }).start(this._showMessageBarAlertComplete())
+    }).start(this._showMessageBarAlertComplete.bind(this))
   }
 
   /*
@@ -242,7 +242,7 @@ class MessageBar extends Component {
       toValue: 0,
       duration: this.state.durationToHide,
       useNativeDriver: true
-    }).start(this._hideMessageBarAlertComplete())
+    }).start(this._hideMessageBarAlertComplete.bind(this))
   }
 
   _hideMessageBarAlertComplete () {
@@ -390,11 +390,21 @@ class MessageBar extends Component {
       }
     }
 
+    // If state.height is not set yet, animate from 30% off the screen as our notifications don't use more
+    // height than that
+    //let animateYFrom = this.state.height || (windowHeight * 0.3)
+    let animateYFrom = windowHeight * 0.3
+
     switch (animationType) {
       case 'SlideFromTop':
         var animationY = this.animatedValue.interpolate({
           inputRange: [0, 1],
-          outputRange: [-windowHeight, 0]
+          // To fix an issue where the message bar would reappear when switching out of the app via the home
+          // button on Android, here we animate to windowHeight instead of 0, and adjust the position of the
+          // Animated.View below accordingly
+          // We also use animateYFrom to start the notification from only just off the screen so that there is
+          // no initial animation lag (vs starting the animation from way off the screen)
+          outputRange: [windowHeight - animateYFrom, windowHeight]
         })
         this.animationTypeTransform = [{ translateY: animationY }]
         break
@@ -445,7 +455,9 @@ class MessageBar extends Component {
           borderColor: this.state.strokeColor,
           borderBottomWidth: 1,
           position: 'absolute',
-          top: this.state.viewTopOffset,
+          // Adjust top position as we are animating to +windowHeight instead of 0 (to fix an Android bug
+          // where the top gets reset to 0 when switching away from the app via the home button)
+          top: this.state.viewTopOffset - windowHeight,
           bottom: this.state.viewBottomOffset,
           left: this.state.viewLeftOffset,
           right: this.state.viewRightOffset,
@@ -532,7 +544,7 @@ class MessageBar extends Component {
     }
     if (this.state.children != null) {
       controls.push(
-          this.state.children
+        this.state.children
       );
     }
     return controls;
