@@ -390,15 +390,21 @@ class MessageBar extends Component {
       }
     }
 
+    // If state.height is not set yet, animate from 30% off the screen as our notifications don't use more
+    // height than that
+    //let animateYFrom = this.state.height || (windowHeight * 0.3)
+    let animateYFrom = windowHeight * 0.3
+
     switch (animationType) {
       case 'SlideFromTop':
         var animationY = this.animatedValue.interpolate({
-          // Increase the input range for smoother animations than [0, 1]
-          inputRange: [-1, 1],
+          inputRange: [0, 1],
           // To fix an issue where the message bar would reappear when switching out of the app via the home
-          // button on Android, here we animate to +windowHeight instead of 0, and adjust the position of
-          // the Animated.View below accordingly
-          outputRange: [-windowHeight, windowHeight]
+          // button on Android, here we animate to windowHeight instead of 0, and adjust the position of the
+          // Animated.View below accordingly
+          // We also use animateYFrom to start the notification from only just off the screen so that there is
+          // no initial animation lag (vs starting the animation from way off the screen)
+          outputRange: [windowHeight - animateYFrom, windowHeight]
         })
         this.animationTypeTransform = [{ translateY: animationY }]
         break
