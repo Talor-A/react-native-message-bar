@@ -41,7 +41,7 @@ class MessageBar extends Component {
     this._changeOffsetByPosition(this.state.position)
   }
 
-  componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps (nextProps) {
     if (nextProps && Object.keys(nextProps).length > 0) {
       this.setNewState(nextProps)
     }
