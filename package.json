@@ -1,6 +1,6 @@
 {
   "name": "react-native-message-bar",
-  "version": "2.0.10",
+  "version": "2.1.0",
   "description": "A message bar alert displayed at the top of the screen for react-native",
   "main": "index.js",
   "private": false,
